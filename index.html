@@ -351,21 +351,22 @@
       6: "pelo pelo"
     };
 
-    // Algoritmo Deterministico basato sulla data locale
+    // Algoritmo Deterministico: Parte da oggi come Wordle #1
     function getTodayWord() {
       const now = new Date();
       const year = now.getFullYear();
       const month = now.getMonth();
       const day = now.getDate();
 
-      const start = new Date(2026, 0, 1);
+      // Data di lancio impostata ad oggi (9 Settembre 2026 = Wordle #1)
+      const start = new Date(2026, 8, 9);
       const current = new Date(year, month, day);
       const diffDays = Math.floor((current - start) / (1000 * 60 * 60 * 24));
 
       const wordIndex = Math.abs(diffDays) % TARGET_WORDS.length;
       return {
         word: TARGET_WORDS[wordIndex],
-        dayNum: diffDays + 1,
+        dayNum: Math.max(1, diffDays + 1),
         dateKey: `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
       };
     }
@@ -540,15 +541,11 @@
 
         const messageText = WIN_MESSAGES[attemptsUsed];
         
-        if (attemptsUsed === 6) {
-          animateRowVictory(currentRow, () => {
-            showMessage(messageText);
-            setTimeout(() => showEndModal(true, attemptsUsed), 1800);
-          });
-        } else {
+        // Animazione di salto sempre attiva in caso di vittoria
+        animateRowVictory(currentRow, () => {
           showMessage(messageText);
           setTimeout(() => showEndModal(true, attemptsUsed), 1800);
-        }
+        });
 
       } else if (currentRow === MAX_ATTEMPTS - 1) {
         isGameOver = true;
@@ -557,7 +554,8 @@
         gameState.currentRow = MAX_ATTEMPTS;
         saveState();
         
-        showMessage("Peccato!");
+        // Messaggio di sconfitta richiesto
+        showMessage("non era giornata dai...");
         setTimeout(() => showEndModal(false, MAX_ATTEMPTS), 1800);
       } else {
         currentRow++;
