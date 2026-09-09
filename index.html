@@ -11,9 +11,9 @@
 
   <style>
     :root {
-      --red-correct: #DC2E5E;    /* Rosso Wallife: c'è ed è nel posto esatto */
-      --blue-present: #1B355C;   /* Blu Wallife: c'è ma nel posto sbagliato */
-      --absent-color: #787C7E;   /* Grigio scuro uniforme per caselle e tastiera */
+      --red-correct: #DC2E5E;    /* Rosso Wallife */
+      --blue-present: #1B355C;   /* Blu Wallife */
+      --absent-color: #787C7E;   /* Grigio uniforme per caselle/tastiera */
       --light-bg: #F8F9FA;
       --border-color: #D3D6DA;
       --text-dark: #1B355C;
@@ -32,10 +32,12 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      min-height: 100vh;
+      height: 100vh;
+      max-height: -webkit-fill-available;
       margin: 0;
-      padding: 10px;
+      padding: 6px 10px;
       touch-action: manipulation;
+      overflow: hidden;
     }
 
     header {
@@ -43,7 +45,7 @@
       width: 100%;
       max-width: 500px;
       text-align: center;
-      padding-bottom: 10px;
+      padding-bottom: 8px;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -52,44 +54,85 @@
     }
 
     .logo-img {
-      width: 46px;
+      width: 36px;
       height: auto;
       object-fit: contain;
-      margin-top: 4px;
     }
 
-    h1 {
-      margin: 0;
-      color: var(--red-correct);
-      letter-spacing: 1.5px;
-      font-size: 1.6rem;
+    /* TITOLO IN STILE CASELLE WORDLE SU UN'UNICA RIGA */
+    .brand-title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .title-row {
+      display: flex;
+      gap: 2px;
+      flex-wrap: nowrap;
+    }
+
+    .title-tile {
+      width: 20px;
+      height: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.8rem;
       font-weight: 800;
-      font-family: var(--font-family);
+      color: white;
+      border-radius: 3px;
+      text-transform: uppercase;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .title-tile.space {
+      width: 8px;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .title-tile.red {
+      background-color: var(--red-correct);
+    }
+
+    .title-tile.blue {
+      background-color: var(--blue-present);
     }
 
     .help-btn {
       position: absolute;
       right: 10px;
-      top: 10px;
+      top: 5px;
       background: none;
       border: 2px solid var(--text-dark);
       color: var(--text-dark);
       border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      font-weight: 700;
-      font-size: 1.1rem;
+      width: 30px;
+      height: 30px;
+      font-weight: 800;
+      font-size: 1rem;
       cursor: pointer;
+    }
+
+    /* GRIGLIA DI GIOCO ADATTIVA PER MOBILE */
+    #game-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-grow: 1;
+      width: 100%;
+      max-width: 350px;
+      padding: 4px 0;
     }
 
     #game-board {
       display: grid;
       grid-template-rows: repeat(6, 1fr);
       grid-gap: 5px;
-      padding: 10px;
       width: 100%;
-      max-width: 350px;
-      height: 410px;
+      height: 100%;
+      max-height: 390px;
     }
 
     .row {
@@ -105,7 +148,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 800;
       text-transform: uppercase;
       border-radius: 6px;
@@ -133,25 +176,25 @@
       border-color: var(--absent-color) !important;
     }
 
-    /* ANIMAZIONE VITTORIA (ULTIMO TENTATIVO) */
+    /* ANIMAZIONE VITTORIA */
     @keyframes jump {
       0% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+      50% { transform: translateY(-16px); }
       100% { transform: translateY(0); }
     }
 
     .tile.bounce {
-      animation: jump 0.5s ease forwards;
+      animation: jump 0.45s ease forwards;
     }
 
-    /* TASTIERA */
+    /* TASTIERA OTTIMIZZATA PER DISPLAY MOBILE */
     #keyboard {
       width: 100%;
       max-width: 500px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin-bottom: 10px;
+      gap: 5px;
+      margin-bottom: 6px;
     }
 
     .keyboard-row {
@@ -164,7 +207,7 @@
       background-color: #D3D6DA;
       border: none;
       border-radius: 4px;
-      padding: 14px 0;
+      padding: 12px 0;
       font-weight: 700;
       flex: 1;
       cursor: pointer;
@@ -176,7 +219,7 @@
 
     .key.large {
       flex: 1.5;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
 
     .key[data-state="correct"] {
@@ -194,7 +237,7 @@
       color: white !important;
     }
 
-    /* POP-UP / MODALI */
+    /* POP-UP E LEGENDA ESEMPI */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -203,15 +246,17 @@
       justify-content: center;
       align-items: center;
       z-index: 100;
-      padding: 20px;
+      padding: 15px;
     }
 
     .modal-content {
       background: white;
-      padding: 25px;
+      padding: 20px;
       border-radius: 12px;
-      max-width: 450px;
+      max-width: 440px;
       width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
@@ -219,32 +264,57 @@
       margin-top: 0;
       color: var(--red-correct);
       font-weight: 800;
+      font-size: 1.3rem;
     }
 
-    .color-legend {
-      margin: 15px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    /* ESEMPI POP-UP REGOLA */
+    .example-block {
+      margin: 12px 0;
     }
 
-    .legend-item {
+    .example-row {
       display: flex;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .example-tile {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border-color);
+      display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 12px;
-      font-size: 0.95rem;
-    }
-
-    .color-box {
-      width: 24px;
-      height: 24px;
+      font-weight: 800;
+      font-size: 1rem;
       border-radius: 4px;
-      flex-shrink: 0;
+      background-color: white;
+      color: var(--text-dark);
     }
 
-    .color-box.red { background-color: var(--red-correct); }
-    .color-box.blue { background-color: var(--blue-present); }
-    .color-box.gray { background-color: var(--absent-color); }
+    .example-tile.red {
+      background-color: var(--red-correct);
+      color: white;
+      border-color: var(--red-correct);
+    }
+
+    .example-tile.blue {
+      background-color: var(--blue-present);
+      color: white;
+      border-color: var(--blue-present);
+    }
+
+    .example-tile.gray {
+      background-color: var(--absent-color);
+      color: white;
+      border-color: var(--absent-color);
+    }
+
+    .example-text {
+      font-size: 0.85rem;
+      color: var(--text-dark);
+      margin: 0;
+    }
 
     .close-btn {
       background: var(--red-correct);
@@ -262,13 +332,13 @@
     /* TOAST MESSAGE IN ALTO */
     #message-container {
       position: fixed;
-      top: 9%;
+      top: 10%;
       background-color: var(--text-dark);
       color: white;
-      padding: 12px 24px;
+      padding: 10px 20px;
       border-radius: 8px;
       font-weight: 700;
-      font-size: 1.05rem;
+      font-size: 1rem;
       display: none;
       z-index: 200;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -279,42 +349,86 @@
 
   <header>
     <img src="logo.png" alt="Wallife Logo" class="logo-img">
-    <h1>WALLIFE WORDLE</h1>
+
+    <!-- Titolo "WALLIFE WORDLE" a caselle SU UN'UNICA RIGA -->
+    <div class="brand-title">
+      <div class="title-row">
+        <span class="title-tile red">W</span>
+        <span class="title-tile red">A</span>
+        <span class="title-tile red">L</span>
+        <span class="title-tile red">L</span>
+        <span class="title-tile red">I</span>
+        <span class="title-tile red">F</span>
+        <span class="title-tile red">E</span>
+        <span class="title-tile space"></span>
+        <span class="title-tile blue">W</span>
+        <span class="title-tile blue">O</span>
+        <span class="title-tile blue">R</span>
+        <span class="title-tile blue">D</span>
+        <span class="title-tile blue">L</span>
+        <span class="title-tile blue">E</span>
+      </div>
+    </div>
+
     <button class="help-btn" onclick="openRulesModal()">?</button>
   </header>
 
   <div id="message-container"></div>
 
-  <div id="game-board"></div>
+  <div id="game-container">
+    <div id="game-board"></div>
+  </div>
 
   <div id="keyboard"></div>
 
-  <!-- POP-UP REGOLE INIZIALE -->
+  <!-- POP-UP REGOLE INIZIALE CON ESEMPI VISIVI -->
   <div id="rules-modal" class="modal-overlay">
     <div class="modal-content">
-      <h2>Come funziona</h2>
-      <p>Il marketing non riposa mai. Abbiamo pensato al wordle giornaliero come passatempo durante la pausa caffè o come scusa per fare due chiacchiere. (O quando preferite. Sara lo fa sempre alle 7 di mattina mentre fa colazione)</p>
+      <h2>Come funciona</h2>
+      <p style="font-size:0.9rem; line-height:1.4;">Il marketing non riposa mai. Abbiamo pensato al wordle giornaliero come passatempo durante la pausa caffè o come scusa per fare due chiacchiere. (O quando preferite. Sara lo fa sempre alle 7 di mattina mentre fa colazione)</p>
       
-      <p><strong>Ecco come funziona:</strong></p>
-      <ul>
+      <p style="font-size:0.9rem;"><strong>Regole principali:</strong></p>
+      <ul style="font-size:0.85rem; padding-left: 20px;">
         <li>Indovina la parola di 5 lettere in 6 tentativi.</li>
         <li>Ogni tentativo deve essere una parola valida del vocabolario italiano.</li>
       </ul>
 
-      <p><strong>Legenda Colori:</strong></p>
-      <div class="color-legend">
-        <div class="legend-item">
-          <span class="color-box red"></span>
-          <span><strong>Rosso:</strong> La lettera c'è ed è nel posto esatto.</span>
+      <p style="font-size:0.9rem; margin-bottom:8px;"><strong>Esempi spiegazione colori:</strong></p>
+      
+      <!-- Esempio 1: Rosso -->
+      <div class="example-block">
+        <div class="example-row">
+          <div class="example-tile red">G</div>
+          <div class="example-tile">A</div>
+          <div class="example-tile">T</div>
+          <div class="example-tile">T</div>
+          <div class="example-tile">O</div>
         </div>
-        <div class="legend-item">
-          <span class="color-box blue"></span>
-          <span><strong>Blu:</strong> La lettera c'è ma nel posto sbagliato.</span>
+        <p class="example-text">La lettera <strong>G</strong> è nella parola ed è nel posto corretto.</p>
+      </div>
+
+      <!-- Esempio 2: Blu -->
+      <div class="example-block">
+        <div class="example-row">
+          <div class="example-tile">S</div>
+          <div class="example-tile blue">O</div>
+          <div class="example-tile">L</div>
+          <div class="example-tile">D</div>
+          <div class="example-tile">I</div>
         </div>
-        <div class="legend-item">
-          <span class="color-box gray"></span>
-          <span><strong>Grigio:</strong> La lettera non è presente nella parola.</span>
+        <p class="example-text">La lettera <strong>O</strong> è nella parola ma nel posto sbagliato.</p>
+      </div>
+
+      <!-- Esempio 3: Grigio -->
+      <div class="example-block">
+        <div class="example-row">
+          <div class="example-tile">A</div>
+          <div class="example-tile">L</div>
+          <div class="example-tile gray">T</div>
+          <div class="example-tile">R</div>
+          <div class="example-tile">O</div>
         </div>
+        <p class="example-text">La lettera <strong>T</strong> non è presente nella parola in alcun posto.</p>
       </div>
 
       <button class="close-btn" onclick="closeRulesModal()">Inizia a Giocare!</button>
@@ -358,7 +472,6 @@
       const month = now.getMonth();
       const day = now.getDate();
 
-      // Data di lancio impostata ad oggi (9 Settembre 2026 = Wordle #1)
       const start = new Date(2026, 8, 9);
       const current = new Date(year, month, day);
       const diffDays = Math.floor((current - start) / (1000 * 60 * 60 * 24));
@@ -540,8 +653,7 @@
         saveState();
 
         const messageText = WIN_MESSAGES[attemptsUsed];
-        
-        // Animazione di salto sempre attiva in caso di vittoria
+
         animateRowVictory(currentRow, () => {
           showMessage(messageText);
           setTimeout(() => showEndModal(true, attemptsUsed), 1800);
@@ -553,8 +665,7 @@
         gameState.hasWon = false;
         gameState.currentRow = MAX_ATTEMPTS;
         saveState();
-        
-        // Messaggio di sconfitta richiesto
+
         showMessage("non era giornata dai...");
         setTimeout(() => showEndModal(false, MAX_ATTEMPTS), 1800);
       } else {
